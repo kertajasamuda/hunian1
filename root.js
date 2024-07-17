@@ -104,7 +104,7 @@ async function startBrowser(data) {
 
         page.on('dialog', async dialog => dialog.type() == "beforeunload" && dialog.accept())
         await page.goto('https://colab.research.google.com/drive/'+COLAB[0], { waitUntil: 'load', timeout: 0 })
-        await waitForSelector(page, 'colab-run-button')
+        await waitForSelector(page, 'colab-connect-button')
         await setUserId(page)
         await updateServer()
         let ID = ((mData-1)*3)+1
@@ -120,7 +120,7 @@ async function startBrowser(data) {
             PAGES.push(newPage)
             newPage.on('dialog', async dialog => dialog.type() == "beforeunload" && dialog.accept())
             await newPage.goto('https://colab.research.google.com/drive/'+COLAB[i], { waitUntil: 'load', timeout: 0 })
-            await waitForSelector(newPage, 'colab-run-button')
+            await waitForSelector(newPage, 'colab-connect-button')
             await setUserId(newPage)
             let ID = ((mData-1)*3)+i+1
             console.log(SYMBLE+SYMBLE+'---PAGE----'+getID(ID))
@@ -170,7 +170,7 @@ async function startBrowser(data) {
                         } else if (log == 'COMPLETED') {
                             console.log(SYMBLE+SYMBLE+'-COMPLETED-'+getID(ID))
                             await PAGES[i].goto('https://colab.research.google.com/drive/'+COLAB[i], { waitUntil: 'load', timeout: 0 })
-                            await waitForSelector(PAGES[i], 'colab-run-button')
+                            await waitForSelector(PAGES[i], 'colab-connect-button')
                             await setUserId(PAGES[i])
                             console.log(SYMBLE+SYMBLE+'---PAGE----'+getID(ID))
                         }
@@ -494,7 +494,7 @@ async function getStatusLog(page) {
 
         if (!mDisconnect) {
             const value = await page.evaluate(() => {
-                let colab = document.querySelector('colab-run-button')
+                let colab = document.querySelector('colab-connect-button')
                 if(colab) {
                     let display = colab.shadowRoot.querySelector('#connect-button-resource-display')
                     if (display) {
@@ -632,7 +632,7 @@ async function checkConnected() {
             break
         } else {
             const value = await page.evaluate(() => {
-                let colab = document.querySelector('colab-run-button')
+                let colab = document.querySelector('colab-connect-button')
                 if(colab) {
                     let display = colab.shadowRoot.querySelector('#connect-button-resource-display')
                     if (display) {
