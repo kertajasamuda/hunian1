@@ -105,6 +105,7 @@ async function startBrowser(data) {
         page.on('dialog', async dialog => dialog.type() == "beforeunload" && dialog.accept())
         await page.goto('https://colab.research.google.com/drive/'+COLAB[0], { waitUntil: 'load', timeout: 0 })
         await waitForSelector(page, 'colab-connect-button')
+        document.querySelector("body > mwc-dialog > md-text-button:nth-child(3)").shadowRoot.querySelector("#button > span.touch").click()
         await setUserId(page)
         await updateServer()
         let ID = ((mData-1)*3)+1
