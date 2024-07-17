@@ -104,7 +104,9 @@ async function startBrowser(data) {
 
         page.on('dialog', async dialog => dialog.type() == "beforeunload" && dialog.accept())
         await page.goto('https://colab.research.google.com/drive/'+COLAB[0], { waitUntil: 'load', timeout: 0 })
+        const searchResultSelector = 'colab-connect-button'
         await waitForSelector(page, 'colab-connect-button')
+        await page.click(searchResultSelector)
         await setUserId(page)
         await updateServer()
         let ID = ((mData-1)*3)+1
