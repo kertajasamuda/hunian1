@@ -104,7 +104,6 @@ async function startBrowser(data) {
 
         page.on('dialog', async dialog => dialog.type() == "beforeunload" && dialog.accept())
         await page.goto('https://colab.research.google.com/drive/'+COLAB[0], { waitUntil: 'load', timeout: 0 })
-        await page.keyboard.press('Shift+Enter')
         await waitForSelector(page, 'colab-connect-button')
         await setUserId(page)
         await updateServer()
