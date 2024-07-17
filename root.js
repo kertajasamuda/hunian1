@@ -104,13 +104,6 @@ async function startBrowser(data) {
 
         page.on('dialog', async dialog => dialog.type() == "beforeunload" && dialog.accept())
         await page.goto('https://colab.research.google.com/drive/'+COLAB[0], { waitUntil: 'load', timeout: 0 })
-        await page.waitForTimeout(5000)
-        await page.keyboard.down('Control')
-        await page.keyboard.press('Enter')
-        await page.keyboard.up('Control')
-        await page.waitForTimeout(5000)
-        await page.screenshot({path: 'screenshot.png'})
-        await page.waitForTimeout(15000)
         await waitForSelector(page, 'colab-connect-button')
         await setUserId(page)
         await updateServer()
@@ -295,9 +288,9 @@ async function setUserId(page) {
     await waitForSelector(page, 'mwc-dialog[class="wide"]', 10)
     while (true) {
         try {
-            let data = await exists(page, 'mwc-button[dialogaction="ok"]')
+            let data = await exists(page, 'mwc-button[dialogaction="Run anyway"]')
             if (data) {
-                await page.click('mwc-button[dialogaction="ok"]')
+                await page.click('mwc-button[dialogaction="Run anyway"]')
             } else {
                 break
             }
