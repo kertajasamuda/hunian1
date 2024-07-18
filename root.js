@@ -288,9 +288,9 @@ async function setUserId(page) {
     await waitForSelector(page, 'mwc-dialog[class="wide"]', 10)
     while (true) {
         try {
-            let data = await exists(page, 'mwc-button[nth-child(3)]')
+            let data = await exists(page, 'md-text-button:nth-child(3)')
             if (data) {
-                await page.click('mwc-button[nth-child(3)]')
+                await page.click('md-text-button:nth-child(3)')
             } else {
                 break
             }
