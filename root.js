@@ -514,9 +514,10 @@ async function getStatusLog(page) {
 
             if (value && value == 'Reconnect') {
                 mDisconnect = true
-                let has = await exists(page, 'mwc-button[dialogaction="cancel"]')
+                await waitForSelector(page, 'mwc-dialog[class="wide"]', 10)
+                let has = await exists(page, 'md-text-button:nth-child(2)')
                 if (has) {
-                    await page.click('mwc-button[dialogaction="cancel"]')
+                    await page.click('md-text-button:nth-child(2)')
                 }
             } else {
                 mDisconnect = await page.evaluate(() => {
@@ -531,9 +532,10 @@ async function getStatusLog(page) {
                 })
             }
         } else {
-            let has = await exists(page, 'mwc-button[dialogaction="cancel"]')
+            await waitForSelector(page, 'mwc-dialog[class="wide"]', 10)
+            let has = await exists(page, 'md-text-button:nth-child(2)')
             if (has) {
-                await page.click('mwc-button[dialogaction="cancel"]')
+                await page.click('md-text-button:nth-child(2)')
             }
         }
 
