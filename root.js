@@ -285,12 +285,12 @@ async function setUserId(page) {
     await page.keyboard.down('Control')
     await page.keyboard.press('Enter')
     await page.keyboard.up('Control')
-    await waitForSelector(page, 'mwc-dialog[class="wide"]', 10)
+    await waitForSelector(page, 'md-text-button:nth-child(3)', 10)
     while (true) {
         try {
-            let data = await exists(page, 'md-text-button:nth-child(3)')
+            let data = await exists(page, 'mwc-button[span.touch')
             if (data) {
-                await page.click('md-text-button:nth-child(3)')
+                await page.click('mwc-button[span.touch]')
             } else {
                 break
             }
@@ -514,10 +514,9 @@ async function getStatusLog(page) {
 
             if (value && value == 'Reconnect') {
                 mDisconnect = true
-                await waitForSelector(page, 'mwc-dialog[class="wide"]', 10)
-                let has = await exists(page, 'md-text-button:nth-child(2)')
+                let has = await exists(page, 'mwc-button[dialogaction="cancel"]')
                 if (has) {
-                    await page.click('md-text-button:nth-child(2)')
+                    await page.click('mwc-button[dialogaction="cancel"]')
                 }
             } else {
                 mDisconnect = await page.evaluate(() => {
@@ -532,10 +531,9 @@ async function getStatusLog(page) {
                 })
             }
         } else {
-            await waitForSelector(page, 'mwc-dialog[class="wide"]', 10)
-            let has = await exists(page, 'md-text-button:nth-child(2)')
+            let has = await exists(page, 'mwc-button[dialogaction="cancel"]')
             if (has) {
-                await page.click('md-text-button:nth-child(2)')
+                await page.click('mwc-button[dialogaction="cancel"]')
             }
         }
 
