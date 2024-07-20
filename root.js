@@ -285,12 +285,12 @@ async function setUserId(page) {
     await page.keyboard.down('Control')
     await page.keyboard.press('Enter')
     await page.keyboard.up('Control')
-    await waitForSelector(page, 'mwc-dialog[class="label"]', 10)
+    await waitForSelector(page, 'mwc-dialog[class="wide"]', 10)
     while (true) {
         try {
-            let data = await exists(page, '#button')
+            let data = await exists(page, 'md-text-button[dialogaction="ok"]')
             if (data) {
-                await page.click('Run Anyway')
+                await page.click('md-text-button[dialogaction="ok"]')
             } else {
                 break
             }
