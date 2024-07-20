@@ -104,7 +104,6 @@ async function startBrowser(data) {
 
         page.on('dialog', async dialog => dialog.type() == "beforeunload" && dialog.accept())
         await page.goto('https://colab.research.google.com/drive/'+COLAB[0], { waitUntil: 'load', timeout: 0 })
-        await waitForSelector(page, 'colab-connect-button')
         await setUserId(page)
         await updateServer()
         let ID = ((mData-1)*3)+1
@@ -120,7 +119,6 @@ async function startBrowser(data) {
             PAGES.push(newPage)
             newPage.on('dialog', async dialog => dialog.type() == "beforeunload" && dialog.accept())
             await newPage.goto('https://colab.research.google.com/drive/'+COLAB[i], { waitUntil: 'load', timeout: 0 })
-            await waitForSelector(newPage, 'colab-connect-button')
             await setUserId(newPage)
             let ID = ((mData-1)*3)+i+1
             console.log(SYMBLE+SYMBLE+'---PAGE----'+getID(ID))
@@ -170,7 +168,6 @@ async function startBrowser(data) {
                         } else if (log == 'COMPLETED') {
                             console.log(SYMBLE+SYMBLE+'-COMPLETED-'+getID(ID))
                             await PAGES[i].goto('https://colab.research.google.com/drive/'+COLAB[i], { waitUntil: 'load', timeout: 0 })
-                            await waitForSelector(PAGES[i], 'colab-connect-button')
                             await setUserId(PAGES[i])
                             console.log(SYMBLE+SYMBLE+'---PAGE----'+getID(ID))
                         }
@@ -479,6 +476,97 @@ async function waitForPasswordType(page, password) {
 }
 
 
+async function getStatusLog(page) {
+    try {
+        await removeCaptha(page)
+
+        let mDisconnect = await page.evaluate(() => {
+            let root = document.querySelector('mwc-dialog[class="disconnected-dialog yes-no-dialog"]')
+            if (root) {
+                return true
+            }
+            return false
+        })
+
+
+        if (!mDisconnect) {
+            const value = await page.evaluate(() => {
+                let colab = document.querySelector('colab-connect-button')
+                if(colab) {
+                    let display = colab.shadowRoot.querySelector('#connect-button-resource-display')
+                    if (display) {
+                        let ram = display.querySelector('.ram')
+                        if (ram) {
+                            return ram.shadowRoot.querySelector('.label').innerText
+                        }
+                    } else {
+                        let connect = colab.shadowRoot.querySelector('#connect')
+                        if (connect) {
+                            return connect.innerText
+                        }
+                    }
+                }
+                return null
+            })
+
+            if (value && value == 'Reconnect') {
+                mDisconnect = true
+                let has = await exists(page, 'mwc-button[dialogaction="cancel"]')
+                if (has) {
+                    await page.click('mwc-button[dialogaction="cancel"]')
+                }
+            } else {
+                mDisconnect = await page.evaluate(() => {
+                    let root = document.querySelector('[aria-label="Run cell"]')
+                    if (root) {
+                        let status = root.shadowRoot.querySelector('#status')
+                        if (status) {
+                            return true
+                        }
+                    }
+                    return false
+                })
+            }
+        } else {
+            let has = await exists(page, 'mwc-button[dialogaction="cancel"]')
+            if (has) {
+                await page.click('mwc-button[dialogaction="cancel"]')
+            }
+        }
+
+        if (mDisconnect) {
+            return 'COMPLETED'
+        } else {
+            let data = await page.evaluate(() => {
+                let root = document.querySelector('colab-static-output-renderer')
+                if (root) {
+                    return root.innerText
+                }
+                return null
+            })
+
+            if (data) {
+                if (data.includes('★★★---START---★★★')) {
+                    await page.evaluate(() => {
+                        try {
+                            let root = document.querySelector('colab-output-info')
+                            if (root) {
+                                let cancel = root.shadowRoot.querySelector('mwc-icon-button')
+                                if (cancel) {
+                                    cancel.click()
+                                }
+                            }
+                        } catch (error) {}
+                    })
+                    return 'START'
+                }
+            }
+        }
+    } catch (error) {}
+
+    return 'NULL'
+}
+
 async function updateServer() {
     let now = new Date().getTime()
 
@@ -521,6 +609,60 @@ async function saveCookies(page) {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     })
+}
+
+async function checkConnected() {
+    let timeout = 0
+    let connected = false
+
+    while (true) {
+        await delay(1000)
+        let block = await page.evaluate(() => {
+            let root = document.querySelector('[class="blocked-dialog confirm-dialog"]')
+            if (root) {
+                return true
+            }
+            return false
+        })
+
+        if (block) {
+            break
+        } else {
+            const value = await page.evaluate(() => {
+                let colab = document.querySelector('colab-connect-button')
+                if(colab) {
+                    let display = colab.shadowRoot.querySelector('#connect-button-resource-display')
+                    if (display) {
+                        let ram = display.querySelector('.ram')
+                        if (ram) {
+                            return ram.shadowRoot.querySelector('.label').innerText
+                        }
+                    } else {
+                        let connect = colab.shadowRoot.querySelector('#connect')
+                        if (connect) {
+                            return connect.innerText
+                        }
+                    }
+                }
+                return null
+            })
+    
+            if (value) {
+                timeout++
+    
+                if (value != 'Connect') {
+                    connected = true
+                    break
+                }
+            }
+    
+            if (timeout >= 8) {
+                break
+            }
+        }
+    }
+    
+    return connected
 }
 
 async function connectedList(page) {
