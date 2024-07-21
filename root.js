@@ -126,10 +126,7 @@ async function startBrowser(data) {
             console.log(SYMBLE+SYMBLE+'---PAGE----'+getID(ID))
         }
 
-        for (let i = 1; i < 3; i++) {
-            let ID = ((mData-1)*3)+i+1
-        console.log(SYMBLE+SYMBLE+'---LOAD----'+getID(ID))
-        }
+        console.log(SYMBLE+SYMBLE+'---LOAD----'+getID(mData))
 
         let mBlock = false
 
