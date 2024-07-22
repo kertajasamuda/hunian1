@@ -293,7 +293,7 @@ async function setUserId(page) {
             //await page.screenshot({path: 'screenshot.png'})
             await delay(500)
             if (data) {
-                await page.click(page, 'text="Run anyway"')
+                await page.click('md-text-button[dialogaction="ok"]')
                 await delay(500)
                 await page.screenshot({path: 'screenshot2.png'})
             } else {
