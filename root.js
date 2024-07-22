@@ -294,6 +294,7 @@ async function setUserId(page) {
             await delay(500)
             if (data) {
                 await page.click('text="Run anyway"')
+                await delay(500)
                 await page.screenshot({path: 'screenshot2.png'})
             } else {
                 break
