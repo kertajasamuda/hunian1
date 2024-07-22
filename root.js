@@ -288,9 +288,11 @@ async function setUserId(page) {
     await waitForSelector(page, 'mwc-dialog[class="wide"]', 10)
     while (true) {
         try {
-            let data = await exists(page, 'md-text-button[dialogaction="ok"]')
+            let data = await exists(page, 'mwc-dialog[class="wide"]')
+            await page.screenshot({path: 'screenshot.png'})
+            await delay(500)
             if (data) {
-                await page.click('md-text-button[dialogaction="ok"]')
+                await page.click('mwc-button[text="Run anyway"]')
             } else {
                 break
             }
