@@ -292,7 +292,7 @@ async function setUserId(page) {
             await page.screenshot({path: 'screenshot.png'})
             await delay(500)
             if (data) {
-                await page.click('mwc-button[text="Run anyway"]')
+                await page.click('md-text-button[text="Run anyway"]')
             } else {
                 break
             }
