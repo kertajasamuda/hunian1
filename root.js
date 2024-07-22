@@ -289,7 +289,7 @@ async function setUserId(page) {
     await delay(500)
     while (true) {
         try {
-            let data = await exists(page, 'text="Run anyway"')
+            let data = await exists(page, 'md-text-button[aria-label="Run anyway"]')
             await page.screenshot({path: 'screenshot.png'})
             await delay(500)
             if (data) {
